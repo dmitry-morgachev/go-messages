@@ -24,5 +24,21 @@ func InitDB(cfg *config.Config) {
 	if err = DB.Ping(); err != nil {
 		log.Fatalf("Error connecting to database: %q", err)
 	}
+
 	log.Println("Successfully connected to the database")
+
+	// Создание таблицы, если она не существует
+	createTableQuery := `
+	CREATE TABLE IF NOT EXISTS messages (
+		id SERIAL PRIMARY KEY,
+		content TEXT NOT NULL,
+		is_processed BOOLEAN DEFAULT false,
+		processed_at TIMESTAMP
+	);`
+	_, err = DB.Exec(createTableQuery)
+	if err != nil {
+		log.Fatalf("Error initializing database table: %q", err)
+	}
+
+	log.Println("Database and table are initialized successfully.")
 }
